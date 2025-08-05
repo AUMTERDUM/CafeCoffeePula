@@ -1,0 +1,161 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model Category {
+  id          String   @id @default(cuid())
+  name        String   @unique
+  description String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  products Product[]
+}
+
+model Product {
+  id          String   @id @default(cuid())
+  name        String
+  description String?
+  price       Float
+  image       String?
+  available   Boolean  @default(true)
+  categoryId  String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  category    Category @relation(fields: [categoryId], references: [id])
+  orderItems  OrderItem[]
+  recipe      Recipe?
+}
+
+model Order {
+  id          String      @id @default(cuid())
+  orderNumber String      @unique
+  totalAmount Float
+  status      OrderStatus @default(PENDING)
+  paymentMethod PaymentMethod?
+  customerName String?
+  notes       String?
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+  
+  items       OrderItem[]
+  payment     Payment?
+}
+
+model OrderItem {
+  id        String @id @default(cuid())
+  quantity  Int
+  price     Float
+  subtotal  Float
+  
+  orderId   String
+  productId String
+  
+  order     Order   @relation(fields: [orderId], references: [id])
+  product   Product @relation(fields: [productId], references: [id])
+}
+
+model Payment {
+  id            String        @id @default(cuid())
+  amount        Float
+  method        PaymentMethod
+  status        PaymentStatus @default(PENDING)
+  transactionId String?
+  createdAt     DateTime      @default(now())
+  
+  orderId       String        @unique
+  order         Order         @relation(fields: [orderId], references: [id])
+}
+
+enum OrderStatus {
+  PENDING
+  CONFIRMED
+  PREPARING
+  READY
+  COMPLETED
+  CANCELLED
+}
+
+enum PaymentMethod {
+  CASH
+  CREDIT_CARD
+  DEBIT_CARD
+  MOBILE_PAYMENT
+  QR_CODE
+}
+
+enum PaymentStatus {
+  PENDING
+  COMPLETED
+  FAILED
+  REFUNDED
+}
+
+// Inventory Management Models
+model Ingredient {
+  id          String   @id @default(cuid())
+  name        String   @unique
+  unit        String   // มล., กรัม, ถ้วย, ช้อน
+  costPerUnit Float    // ต้นทุนต่อหน่วย
+  currentStock Float   @default(0)
+  minStock    Float    @default(0) // แจ้งเตือนเมื่อต่ำกว่านี้
+  maxStock    Float?   // สต๊อกสูงสุด
+  supplier    String?  // ผู้จำหน่าย
+  description String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  recipes     RecipeIngredient[]
+  stockMovements StockMovement[]
+}
+
+model Recipe {
+  id          String   @id @default(cuid())
+  productId   String   @unique
+  instructions String? // วิธีทำ
+  prepTime    Int?     // เวลาในการเตรียม (นาที)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  product     Product @relation(fields: [productId], references: [id])
+  ingredients RecipeIngredient[]
+}
+
+model RecipeIngredient {
+  id           String @id @default(cuid())
+  recipeId     String
+  ingredientId String
+  quantity     Float  // ปริมาณที่ใช้
+  
+  recipe       Recipe     @relation(fields: [recipeId], references: [id])
+  ingredient   Ingredient @relation(fields: [ingredientId], references: [id])
+  
+  @@unique([recipeId, ingredientId])
+}
+
+model StockMovement {
+  id           String            @id @default(cuid())
+  ingredientId String
+  type         StockMovementType
+  quantity     Float
+  reason       String?           // เหตุผล เช่น "ขาย", "เสียหาย", "เติมสต๊อก"
+  reference    String?           // อ้างอิง เช่น OrderId
+  createdAt    DateTime          @default(now())
+  
+  ingredient   Ingredient @relation(fields: [ingredientId], references: [id])
+}
+
+enum StockMovementType {
+  IN      // เข้า
+  OUT     // ออก
+  ADJUST  // ปรับปรุง
+}
