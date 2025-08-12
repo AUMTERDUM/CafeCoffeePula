@@ -2,9 +2,11 @@
 
 import { useState, useEffect } from 'react';
 import { loyaltyAPI } from '@/lib/api';
-import { Member, Reward, MemberStats, PointHistory } from '@/lib/types';
+import { Member, Reward, MemberStats } from '@/lib/types';
 import AddMemberModal from '@/components/AddMemberModal';
 import MemberDetailModal from '@/components/MemberDetailModal';
+import BackButton from '@/components/BackButton';
+import DarkModeToggle from '@/components/DarkModeToggle';
 import { 
   Users, 
   Award,
@@ -97,8 +99,8 @@ const LoyaltyPage: React.FC = () => {
 
   const filteredMembers = members.filter(member =>
     member.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    (member.phone && member.phone.includes(searchTerm)) ||
-    (member.email && member.email.toLowerCase().includes(searchTerm.toLowerCase()))
+    member.phone?.includes(searchTerm) ||
+    member.email?.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   if (loading) {
@@ -134,22 +136,33 @@ const LoyaltyPage: React.FC = () => {
   }
 
   return (
-    <div className="container mx-auto px-4 py-8">
-      <div className="flex items-center gap-4 mb-6">
-        <Users className="h-8 w-8 text-orange-500" />
-        <h1 className="text-3xl font-bold text-gray-900 dark:text-white">ระบบสมาชิกและสะสมแต้ม</h1>
-      </div>
+    <div className="min-h-screen coffee-theme">
+      <div className="container mx-auto px-4 py-8">
+        {/* Header */}
+        <div className="mb-8 fade-in">
+          <div className="flex items-center justify-between mb-6">
+            <div className="flex items-center">
+              <BackButton className="mr-4" />
+              <div className="flex items-center">
+                <Users className="w-8 h-8 text-[var(--coffee-brown)] mr-3" />
+                <h1 className="text-3xl font-bold text-[var(--coffee-dark)]">ระบบสมาชิกและสะสมแต้ม</h1>
+              </div>
+            </div>
+            <DarkModeToggle />
+          </div>
+          <div className="w-24 h-1 bg-[var(--coffee-brown)] rounded-full"></div>
+        </div>
 
       {/* Tab Navigation */}
       <div className="mb-6">
-        <div className="border-b border-gray-200 dark:border-gray-700">
+        <div className="border-b border-[var(--coffee-border)]">
           <nav className="-mb-px flex space-x-8">
             <button
               onClick={() => setSelectedTab('members')}
-              className={`py-2 px-1 border-b-2 font-medium text-sm ${
+              className={`py-2 px-1 border-b-2 font-medium text-sm transition-colors ${
                 selectedTab === 'members'
-                  ? 'border-orange-500 text-orange-600 dark:text-orange-400'
-                  : 'border-transparent text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300'
+                  ? 'border-[var(--coffee-brown)] text-[var(--coffee-brown)]'
+                  : 'border-transparent text-[var(--coffee-medium)] hover:text-[var(--coffee-dark)]'
               }`}
             >
               <Users className="h-4 w-4 inline mr-2" />
@@ -157,10 +170,10 @@ const LoyaltyPage: React.FC = () => {
             </button>
             <button
               onClick={() => setSelectedTab('rewards')}
-              className={`py-2 px-1 border-b-2 font-medium text-sm ${
+              className={`py-2 px-1 border-b-2 font-medium text-sm transition-colors ${
                 selectedTab === 'rewards'
-                  ? 'border-orange-500 text-orange-600 dark:text-orange-400'
-                  : 'border-transparent text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300'
+                  ? 'border-[var(--coffee-brown)] text-[var(--coffee-brown)]'
+                  : 'border-transparent text-[var(--coffee-medium)] hover:text-[var(--coffee-dark)]'
               }`}
             >
               <Gift className="h-4 w-4 inline mr-2" />
@@ -168,10 +181,10 @@ const LoyaltyPage: React.FC = () => {
             </button>
             <button
               onClick={() => setSelectedTab('stats')}
-              className={`py-2 px-1 border-b-2 font-medium text-sm ${
+              className={`py-2 px-1 border-b-2 font-medium text-sm transition-colors ${
                 selectedTab === 'stats'
-                  ? 'border-orange-500 text-orange-600 dark:text-orange-400'
-                  : 'border-transparent text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300'
+                  ? 'border-[var(--coffee-brown)] text-[var(--coffee-brown)]'
+                  : 'border-transparent text-[var(--coffee-medium)] hover:text-[var(--coffee-dark)]'
               }`}
             >
               <TrendingUp className="h-4 w-4 inline mr-2" />
@@ -187,26 +200,26 @@ const LoyaltyPage: React.FC = () => {
           <div className="flex justify-between items-center">
             <div className="flex items-center space-x-4">
               <div className="relative">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-[var(--coffee-medium)] h-4 w-4" />
                 <input
                   type="text"
                   placeholder="ค้นหาสมาชิก..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
                   onKeyPress={(e) => e.key === 'Enter' && handleSearch()}
-                  className="pl-10 pr-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:ring-orange-500 focus:border-orange-500 dark:bg-gray-700 dark:text-white"
+                  className="cute-input pl-10 pr-4 py-2"
                 />
               </div>
               <button
                 onClick={handleSearch}
-                className="px-4 py-2 bg-orange-600 text-white rounded-md hover:bg-orange-700 focus:outline-none focus:ring-2 focus:ring-orange-500"
+                className="btn btn-secondary"
               >
                 ค้นหา
               </button>
             </div>
             <button
               onClick={() => setShowAddMember(true)}
-              className="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-orange-600 hover:bg-orange-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500"
+              className="btn btn-primary"
             >
               <Plus className="h-4 w-4 mr-2" />
               เพิ่มสมาชิก
@@ -214,10 +227,10 @@ const LoyaltyPage: React.FC = () => {
           </div>
 
           <div className="grid gap-4">
-            {members.map((member) => (
+            {filteredMembers.map((member) => (
               <div
                 key={member.id}
-                className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 border border-gray-200 dark:border-gray-700"
+                className="card p-6"
               >
                 <div className="flex justify-between items-start mb-4">
                   <div className="flex items-center space-x-4">
@@ -247,32 +260,32 @@ const LoyaltyPage: React.FC = () => {
 
                 <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-4">
                   <div>
-                    <label className="text-sm font-medium text-gray-500 dark:text-gray-400">คะแนนที่ใช้ได้</label>
-                    <p className="text-2xl font-bold text-orange-600 dark:text-orange-400">
+                    <div className="text-sm font-medium text-[var(--coffee-medium)]">คะแนนที่ใช้ได้</div>
+                    <p className="text-2xl font-bold text-[var(--coffee-brown)]">
                       {member.available_points.toLocaleString()}
                     </p>
                   </div>
                   <div>
-                    <label className="text-sm font-medium text-gray-500 dark:text-gray-400">คะแนนรวม</label>
-                    <p className="text-lg font-semibold text-gray-900 dark:text-white">
+                    <div className="text-sm font-medium text-[var(--coffee-medium)]">คะแนนรวม</div>
+                    <p className="text-lg font-semibold text-[var(--coffee-dark)]">
                       {member.total_points.toLocaleString()}
                     </p>
                   </div>
                   <div>
-                    <label className="text-sm font-medium text-gray-500 dark:text-gray-400">ยอดใช้จ่าย</label>
-                    <p className="text-lg font-semibold text-green-600 dark:text-green-400">
+                    <div className="text-sm font-medium text-[var(--coffee-medium)]">ยอดใช้จ่าย</div>
+                    <p className="text-lg font-semibold text-green-600">
                       ฿{member.total_spent.toLocaleString()}
                     </p>
                   </div>
                   <div>
-                    <label className="text-sm font-medium text-gray-500 dark:text-gray-400">จำนวนออเดอร์</label>
-                    <p className="text-lg font-semibold text-gray-900 dark:text-white">
+                    <div className="text-sm font-medium text-[var(--coffee-medium)]">จำนวนออเดอร์</div>
+                    <p className="text-lg font-semibold text-[var(--coffee-dark)]">
                       {member.total_orders.toLocaleString()}
                     </p>
                   </div>
                 </div>
 
-                <div className="flex items-center justify-between text-sm text-gray-600 dark:text-gray-400 mb-4">
+                <div className="flex items-center justify-between text-sm text-[var(--coffee-medium)] mb-4">
                   <div className="flex items-center space-x-4">
                     {member.phone && (
                       <div className="flex items-center">
@@ -299,12 +312,12 @@ const LoyaltyPage: React.FC = () => {
                 <div className="flex justify-end gap-2">
                   <button
                     onClick={() => setSelectedMember(member)}
-                    className="inline-flex items-center px-3 py-2 border border-gray-300 dark:border-gray-600 shadow-sm text-sm leading-4 font-medium rounded-md text-gray-700 dark:text-gray-200 bg-white dark:bg-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500"
+                    className="btn btn-secondary"
                   >
                     <Eye className="h-4 w-4 mr-2" />
                     ดูรายละเอียด
                   </button>
-                  <button className="inline-flex items-center px-3 py-2 border border-gray-300 dark:border-gray-600 shadow-sm text-sm leading-4 font-medium rounded-md text-gray-700 dark:text-gray-200 bg-white dark:bg-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500">
+                  <button className="btn btn-accent">
                     <Edit className="h-4 w-4 mr-2" />
                     แก้ไข
                   </button>
@@ -315,9 +328,9 @@ const LoyaltyPage: React.FC = () => {
 
           {members.length === 0 && (
             <div className="text-center py-12">
-              <Users className="mx-auto h-12 w-12 text-gray-400" />
-              <h3 className="mt-2 text-sm font-medium text-gray-900 dark:text-white">ไม่มีสมาชิก</h3>
-              <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
+              <Users className="mx-auto h-12 w-12 text-[var(--coffee-medium)]" />
+              <h3 className="mt-2 text-sm font-medium text-[var(--coffee-dark)]">ไม่มีสมาชิก</h3>
+              <p className="mt-1 text-sm text-[var(--coffee-medium)]">
                 เริ่มต้นด้วยการเพิ่มสมาชิกคนแรก
               </p>
             </div>
@@ -329,8 +342,8 @@ const LoyaltyPage: React.FC = () => {
       {selectedTab === 'rewards' && (
         <div className="space-y-4">
           <div className="flex justify-between items-center">
-            <h2 className="text-xl font-semibold text-gray-900 dark:text-white">รางวัลและสิทธิพิเศษ</h2>
-            <button className="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-orange-600 hover:bg-orange-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500">
+            <h2 className="text-xl font-semibold text-[var(--coffee-dark)]">รางวัลและสิทธิพิเศษ</h2>
+            <button className="btn btn-primary">
               <Plus className="h-4 w-4 mr-2" />
               เพิ่มรางวัล
             </button>
@@ -531,6 +544,7 @@ const LoyaltyPage: React.FC = () => {
         member={selectedMember} 
         onUpdate={fetchData} 
       />
+      </div>
     </div>
   );
 };

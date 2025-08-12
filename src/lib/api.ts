@@ -1,7 +1,8 @@
 // API Configuration for Coffee PuLa
-const API_BASE_URL = process.env.NODE_ENV === 'production' 
-  ? 'https://api.coffee-pula.com/api'  // Production API
-  : 'http://localhost:8081/api';       // Development Go Backend
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 
+  (process.env.NODE_ENV === 'production' 
+    ? 'https://api.coffee-pula.com/api'  // Production API
+    : 'http://localhost:8081/api');      // Development Go Backend
 
 // API Endpoints
 const API_ENDPOINTS = {
@@ -59,6 +60,8 @@ const API_ENDPOINTS = {
 
 // API Helper Functions
 export const apiCall = async (endpoint: string, options: RequestInit = {}) => {
+  const url = endpoint.startsWith('http') ? endpoint : `${API_BASE_URL}${endpoint}`;
+  
   const defaultOptions: RequestInit = {
     headers: {
       'Content-Type': 'application/json',
@@ -68,7 +71,7 @@ export const apiCall = async (endpoint: string, options: RequestInit = {}) => {
   };
 
   try {
-    const response = await fetch(endpoint, defaultOptions);
+    const response = await fetch(url, defaultOptions);
     
     if (!response.ok) {
       const errorData = await response.json().catch(() => ({ error: 'Network error' }));
@@ -78,7 +81,7 @@ export const apiCall = async (endpoint: string, options: RequestInit = {}) => {
     return await response.json();
   } catch (error) {
     console.error('API call failed:', error);
-    throw error;
+    throw new Error('Network error');
   }
 };
 

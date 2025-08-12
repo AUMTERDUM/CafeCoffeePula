@@ -1,12 +1,12 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import Link from 'next/link';
 import { costAPI, menuAPI } from '@/lib/api';
 import { ProductCost, DailyProfitReport, ProductProfitReport, ProfitAnalytics, Product } from '@/lib/types';
+import DarkModeToggle from '@/components/DarkModeToggle';
+import BackButton from '@/components/BackButton';
 import { 
   Calculator,
-  ArrowLeft,
   TrendingUp,
   TrendingDown,
   BarChart3,
@@ -127,22 +127,21 @@ const CostManagementPage: React.FC = () => {
 
   return (
     <div className="min-h-screen coffee-theme">
-      {/* Header */}
-      <div className="card-header border-b-2 border-[var(--coffee-border)]">
-        <div className="container mx-auto px-4 py-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center">
-              <Link href="/" className="btn-secondary mr-4 p-2">
-                <ArrowLeft className="w-6 h-6" />
-              </Link>
-              <Calculator className="w-8 h-8 text-[var(--coffee-brown)] mr-3" />
-              <h1 className="text-2xl font-bold text-[var(--coffee-dark)]">บัญชีต้นทุนและกำไร</h1>
-            </div>
-          </div>
-        </div>
-      </div>
-
       <div className="container mx-auto px-4 py-8">
+        {/* Header */}
+        <div className="mb-8 fade-in">
+          <div className="flex items-center justify-between mb-6">
+            <div className="flex items-center">
+              <BackButton className="mr-4" />
+              <div className="flex items-center">
+                <Calculator className="w-8 h-8 text-[var(--coffee-brown)] mr-3" />
+                <h1 className="text-3xl font-bold text-[var(--coffee-dark)]">บัญชีต้นทุนและกำไร</h1>
+              </div>
+            </div>
+            <DarkModeToggle />
+          </div>
+          <div className="w-24 h-1 bg-[var(--coffee-brown)] rounded-full"></div>
+        </div>
         {/* Tab Navigation */}
         <div className="mb-8">
           <div className="flex flex-wrap gap-2 bg-[var(--coffee-soft)] p-2 rounded-lg">

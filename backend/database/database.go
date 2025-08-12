@@ -2,23 +2,51 @@ package database
 
 import (
 	"coffee-pula-backend/models"
-	"gorm.io/driver/sqlite"
-	"gorm.io/gorm"
+	"fmt"
 	"log"
+	"os"
 	"time"
+
 	"github.com/google/uuid"
+	"github.com/joho/godotenv"
+	"gorm.io/driver/mysql"
+	"gorm.io/gorm"
 )
 
 var DB *gorm.DB
 
 func Connect() {
-	var err error
-	DB, err = gorm.Open(sqlite.Open("coffee_pula.db"), &gorm.Config{})
+	// โหลด environment variables
+	err := godotenv.Load()
+	if err != nil {
+		log.Println("Warning: .env file not found, using default values")
+	}
+
+	// อ่านค่าจาก environment variables
+	dbHost := getEnv("DB_HOST", "localhost")
+	dbPort := getEnv("DB_PORT", "3306")
+	dbUser := getEnv("DB_USER", "coffee_user")
+	dbPassword := getEnv("DB_PASSWORD", "coffee_password")
+	dbName := getEnv("DB_NAME", "coffee_pula_db")
+
+	// สร้าง DSN string
+	dsn := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?charset=utf8mb4&parseTime=True&loc=Local",
+		dbUser, dbPassword, dbHost, dbPort, dbName)
+
+	DB, err = gorm.Open(mysql.Open(dsn), &gorm.Config{})
 	if err != nil {
 		log.Fatal("Failed to connect to database:", err)
 	}
 
 	log.Println("Database connected successfully")
+}
+
+// Helper function to get environment variable with default value
+func getEnv(key, defaultValue string) string {
+	if value := os.Getenv(key); value != "" {
+		return value
+	}
+	return defaultValue
 }
 
 func Migrate() {
@@ -52,11 +80,11 @@ func Migrate() {
 		&models.DailyProfitReport{},
 		&models.ProductProfitReport{},
 	)
-	
+
 	if err != nil {
 		log.Fatal("Failed to migrate database:", err)
 	}
-	
+
 	log.Println("Database migration completed")
 }
 
@@ -64,7 +92,7 @@ func Seed() {
 	// Check if categories already exist
 	var categoryCount int64
 	DB.Model(&models.Category{}).Count(&categoryCount)
-	
+
 	if categoryCount > 0 {
 		log.Println("Data already seeded, skipping...")
 		return
@@ -126,21 +154,21 @@ func Seed() {
 		// Espresso
 		{RecipeID: recipes[0].ID, IngredientID: ingredients[0].ID, Quantity: 18}, // กาแฟ 18g
 		{RecipeID: recipes[0].ID, IngredientID: ingredients[4].ID, Quantity: 30}, // น้ำ 30ml
-		
+
 		// Americano
-		{RecipeID: recipes[1].ID, IngredientID: ingredients[0].ID, Quantity: 18}, // กาแฟ 18g
+		{RecipeID: recipes[1].ID, IngredientID: ingredients[0].ID, Quantity: 18},  // กาแฟ 18g
 		{RecipeID: recipes[1].ID, IngredientID: ingredients[4].ID, Quantity: 180}, // น้ำ 180ml
-		
+
 		// Latte
-		{RecipeID: recipes[2].ID, IngredientID: ingredients[0].ID, Quantity: 18}, // กาแฟ 18g
+		{RecipeID: recipes[2].ID, IngredientID: ingredients[0].ID, Quantity: 18},  // กาแฟ 18g
 		{RecipeID: recipes[2].ID, IngredientID: ingredients[1].ID, Quantity: 200}, // นม 200ml
-		{RecipeID: recipes[2].ID, IngredientID: ingredients[4].ID, Quantity: 30}, // น้ำ 30ml
-		
+		{RecipeID: recipes[2].ID, IngredientID: ingredients[4].ID, Quantity: 30},  // น้ำ 30ml
+
 		// Mocha
-		{RecipeID: recipes[3].ID, IngredientID: ingredients[0].ID, Quantity: 18}, // กาแฟ 18g
+		{RecipeID: recipes[3].ID, IngredientID: ingredients[0].ID, Quantity: 18},  // กาแฟ 18g
 		{RecipeID: recipes[3].ID, IngredientID: ingredients[1].ID, Quantity: 180}, // นม 180ml
-		{RecipeID: recipes[3].ID, IngredientID: ingredients[3].ID, Quantity: 15}, // โกโก้ 15g
-		{RecipeID: recipes[3].ID, IngredientID: ingredients[4].ID, Quantity: 30}, // น้ำ 30ml
+		{RecipeID: recipes[3].ID, IngredientID: ingredients[3].ID, Quantity: 15},  // โกโก้ 15g
+		{RecipeID: recipes[3].ID, IngredientID: ingredients[4].ID, Quantity: 30},  // น้ำ 30ml
 	}
 
 	for i := range recipeIngredients {
@@ -150,82 +178,82 @@ func Seed() {
 	// Create sample promotions
 	var promotionCount int64
 	DB.Model(&models.Promotion{}).Count(&promotionCount)
-	
+
 	if promotionCount == 0 {
 		now := time.Now()
 		nextWeek := now.AddDate(0, 0, 7)
-		
+
 		promotions := []models.Promotion{
 			{
-				BaseModel: models.BaseModel{ID: uuid.New().String()},
-				Name:      "Happy Hour 15:00-17:00",
-				Description: stringPtr("ส่วนลด 20% ในช่วง 15:00-17:00"),
-				Type:      models.PromotionTypeHappyHour,
-				Status:    models.PromotionStatusActive,
+				BaseModel:       models.BaseModel{ID: uuid.New().String()},
+				Name:            "Happy Hour 15:00-17:00",
+				Description:     stringPtr("ส่วนลด 20% ในช่วง 15:00-17:00"),
+				Type:            models.PromotionTypeHappyHour,
+				Status:          models.PromotionStatusActive,
 				DiscountPercent: floatPtr(20),
-				StartTime: stringPtr("15:00"),
-				EndTime:   stringPtr("17:00"),
-				StartDate: &now,
-				EndDate:   &nextWeek,
+				StartTime:       stringPtr("15:00"),
+				EndTime:         stringPtr("17:00"),
+				StartDate:       &now,
+				EndDate:         &nextWeek,
 			},
 			{
-				BaseModel: models.BaseModel{ID: uuid.New().String()},
-				Name:      "ซื้อครบ 200 บาท ลด 10%",
-				Description: stringPtr("ซื้อครบ 200 บาท รับส่วนลด 10% สูงสุด 50 บาท"),
-				Type:      models.PromotionTypeMinSpend,
-				Status:    models.PromotionStatusActive,
+				BaseModel:       models.BaseModel{ID: uuid.New().String()},
+				Name:            "ซื้อครบ 200 บาท ลด 10%",
+				Description:     stringPtr("ซื้อครบ 200 บาท รับส่วนลด 10% สูงสุด 50 บาท"),
+				Type:            models.PromotionTypeMinSpend,
+				Status:          models.PromotionStatusActive,
 				DiscountPercent: floatPtr(10),
-				MinSpend:  floatPtr(200),
-				MaxDiscount: floatPtr(50),
-				StartDate: &now,
-				EndDate:   &nextWeek,
+				MinSpend:        floatPtr(200),
+				MaxDiscount:     floatPtr(50),
+				StartDate:       &now,
+				EndDate:         &nextWeek,
 			},
 			{
-				BaseModel: models.BaseModel{ID: uuid.New().String()},
-				Name:      "ลด 30 บาท",
-				Description: stringPtr("ส่วนลดเงินสด 30 บาท"),
-				Type:      models.PromotionTypeFixedAmount,
-				Status:    models.PromotionStatusActive,
+				BaseModel:      models.BaseModel{ID: uuid.New().String()},
+				Name:           "ลด 30 บาท",
+				Description:    stringPtr("ส่วนลดเงินสด 30 บาท"),
+				Type:           models.PromotionTypeFixedAmount,
+				Status:         models.PromotionStatusActive,
 				DiscountAmount: floatPtr(30),
-				MinSpend: floatPtr(100),
-				StartDate: &now,
-				EndDate:   &nextWeek,
+				MinSpend:       floatPtr(100),
+				StartDate:      &now,
+				EndDate:        &nextWeek,
 			},
 			{
-				BaseModel: models.BaseModel{ID: uuid.New().String()},
-				Name:      "ซื้อ 2 แก้ว ได้ 1 แก้วฟรี",
+				BaseModel:   models.BaseModel{ID: uuid.New().String()},
+				Name:        "ซื้อ 2 แก้ว ได้ 1 แก้วฟรี",
 				Description: stringPtr("ซื้อกาแฟ 2 แก้ว ได้ 1 แก้วฟรี"),
-				Type:      models.PromotionTypeBuyXGetY,
-				Status:    models.PromotionStatusActive,
+				Type:        models.PromotionTypeBuyXGetY,
+				Status:      models.PromotionStatusActive,
 				BuyQuantity: intPtr(2),
 				GetQuantity: intPtr(1),
-				StartDate: &now,
-				EndDate:   &nextWeek,
+				StartDate:   &now,
+				EndDate:     &nextWeek,
 			},
 		}
-		
+
 		for _, promotion := range promotions {
 			DB.Create(&promotion)
 		}
-		
+
 		// Create sample coupons
 		coupons := []models.Coupon{
 			{
-				BaseModel: models.BaseModel{ID: uuid.New().String()},
-				Code:      "WELCOME20",
-				Name:      "คูปองต้อนรับ",
+				BaseModel:   models.BaseModel{ID: uuid.New().String()},
+				Code:        "WELCOME20",
+				Name:        "คูปองต้อนรับ",
 				Description: stringPtr("คูปองต้อนรับลูกค้าใหม่ลด 20%"),
 				PromotionID: promotions[0].ID,
 			},
 			{
-				BaseModel: models.BaseModel{ID: uuid.New().String()},
-				Code:      "SAVE30",
-				Name:      "คูปองลด 30 บาท",
+				BaseModel:   models.BaseModel{ID: uuid.New().String()},
+				Code:        "SAVE30",
+				Name:        "คูปองลด 30 บาท",
 				Description: stringPtr("คูปองลดเงินสด 30 บาท"),
 				PromotionID: promotions[2].ID,
 			},
 		}
-		
+
 		for _, coupon := range coupons {
 			DB.Create(&coupon)
 		}
@@ -234,7 +262,7 @@ func Seed() {
 	// Create sample printer configs
 	var printerCount int64
 	DB.Model(&models.PrinterConfig{}).Count(&printerCount)
-	
+
 	if printerCount == 0 {
 		printers := []models.PrinterConfig{
 			{
@@ -279,7 +307,7 @@ func Seed() {
 				IsActive:       true,
 			},
 		}
-		
+
 		for _, printer := range printers {
 			DB.Create(&printer)
 		}
@@ -309,18 +337,18 @@ func Seed() {
 				IsActive:    true,
 			},
 			{
-				BaseModel:         models.BaseModel{ID: uuid.New().String(), CreatedAt: time.Now(), UpdatedAt: time.Now()},
-				Name:              "คะแนนสมาชิกทอง",
-				Description:       stringPtr("สมาชิกทองได้คะแนนเพิ่ม 50%"),
-				Type:              "PURCHASE",
-				SpendAmount:       floatPtr(100),
-				EarnPoints:        intPtr(1),
-				BonusMultiplier:   floatPtr(1.5),
-				ApplicableTiers:   []string{"GOLD", "PLATINUM"},
-				IsActive:          true,
+				BaseModel:       models.BaseModel{ID: uuid.New().String(), CreatedAt: time.Now(), UpdatedAt: time.Now()},
+				Name:            "คะแนนสมาชิกทอง",
+				Description:     stringPtr("สมาชิกทองได้คะแนนเพิ่ม 50%"),
+				Type:            "PURCHASE",
+				SpendAmount:     floatPtr(100),
+				EarnPoints:      intPtr(1),
+				BonusMultiplier: floatPtr(1.5),
+				ApplicableTiers: []string{"GOLD", "PLATINUM"},
+				IsActive:        true,
 			},
 		}
-		
+
 		for _, rule := range pointRules {
 			DB.Create(&rule)
 		}
@@ -337,26 +365,26 @@ func Seed() {
 				UsageLimit:  intPtr(1), // ใช้ได้ 1 ครั้งต่อคน
 			},
 			{
-				BaseModel:       models.BaseModel{ID: uuid.New().String(), CreatedAt: time.Now(), UpdatedAt: time.Now()},
-				Name:            "ส่วนลด 50 บาท",
-				Description:     stringPtr("ส่วนลดเงินสด 50 บาท"),
-				Type:            "DISCOUNT",
-				PointCost:       100,
-				DiscountAmount:  floatPtr(50),
-				IsActive:        true,
-			},
-			{
 				BaseModel:      models.BaseModel{ID: uuid.New().String(), CreatedAt: time.Now(), UpdatedAt: time.Now()},
-				Name:           "ซื้อ 10 แถม 1",
-				Description:    stringPtr("ซื้อกาแฟครบ 10 แก้ว แถม 1 แก้วฟรี"),
-				Type:           "BUY_X_GET_Y",
-				PointCost:      0, // ไม่ต้องใช้คะแนน
-				BuyQuantity:    intPtr(10),
-				GetQuantity:    intPtr(1),
+				Name:           "ส่วนลด 50 บาท",
+				Description:    stringPtr("ส่วนลดเงินสด 50 บาท"),
+				Type:           "DISCOUNT",
+				PointCost:      100,
+				DiscountAmount: floatPtr(50),
 				IsActive:       true,
 			},
+			{
+				BaseModel:   models.BaseModel{ID: uuid.New().String(), CreatedAt: time.Now(), UpdatedAt: time.Now()},
+				Name:        "ซื้อ 10 แถม 1",
+				Description: stringPtr("ซื้อกาแฟครบ 10 แก้ว แถม 1 แก้วฟรี"),
+				Type:        "BUY_X_GET_Y",
+				PointCost:   0, // ไม่ต้องใช้คะแนน
+				BuyQuantity: intPtr(10),
+				GetQuantity: intPtr(1),
+				IsActive:    true,
+			},
 		}
-		
+
 		for _, reward := range rewards {
 			DB.Create(&reward)
 		}
@@ -380,7 +408,7 @@ func Seed() {
 			},
 			{
 				BaseModel:       models.BaseModel{ID: uuid.New().String(), CreatedAt: time.Now(), UpdatedAt: time.Now()},
-				MemberNumber:    "MEM002", 
+				MemberNumber:    "MEM002",
 				Name:            "สุวรรณา ทองคำ",
 				Phone:           stringPtr("0887654321"),
 				Email:           stringPtr("suwanna@example.com"),
@@ -394,7 +422,7 @@ func Seed() {
 				LastVisit:       &[]time.Time{time.Now().AddDate(0, 0, -1)}[0],
 			},
 		}
-		
+
 		for _, member := range members {
 			DB.Create(&member)
 		}
@@ -406,11 +434,11 @@ func Seed() {
 	if productCount > 0 {
 		var productCostCount int64
 		DB.Model(&models.ProductCost{}).Count(&productCostCount)
-		
+
 		if productCostCount == 0 {
 			var allProducts []models.Product
 			DB.Find(&allProducts)
-			
+
 			for _, product := range allProducts {
 				productCost := models.ProductCost{
 					ProductID:       product.ID,

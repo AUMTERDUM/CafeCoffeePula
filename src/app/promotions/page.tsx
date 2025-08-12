@@ -1,9 +1,9 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Tag, Gift, Clock, Percent, DollarSign, Calendar, Users, ArrowLeft } from 'lucide-react';
-import Link from 'next/link';
+import { Tag, Gift, Clock, Percent, DollarSign, Calendar, Users } from 'lucide-react';
 import DarkModeToggle from '@/components/DarkModeToggle';
+import BackButton from '@/components/BackButton';
 import { promotionAPI, couponAPI } from '@/lib/api';
 
 interface Promotion {
@@ -148,28 +148,22 @@ export default function PromotionsPage() {
   }
 
   return (
-    <div className="min-h-screen bg-[var(--coffee-cream)]">
-      {/* Header */}
-      <div className="bg-[var(--coffee-brown)] text-white shadow-lg">
-        <div className="container mx-auto px-4 py-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-4">
-              <Link href="/" className="flex items-center text-white hover:text-[var(--coffee-light)] transition-colors">
-                <ArrowLeft className="w-6 h-6 mr-2" />
-                กลับหน้าหลัก
-              </Link>
-              <div className="h-6 w-px bg-[var(--coffee-light)]"></div>
-              <h1 className="text-2xl font-bold flex items-center">
-                <Tag className="w-8 h-8 mr-3" />
-                ระบบโปรโมชั่น / ส่วนลด
-              </h1>
+    <div className="min-h-screen coffee-theme">
+      <div className="container mx-auto px-4 py-8">
+        {/* Header */}
+        <div className="mb-8 fade-in">
+          <div className="flex items-center justify-between mb-6">
+            <div className="flex items-center">
+              <BackButton className="mr-4" />
+              <div className="flex items-center">
+                <Tag className="w-8 h-8 text-[var(--coffee-brown)] mr-3" />
+                <h1 className="text-3xl font-bold text-[var(--coffee-dark)]">ระบบโปรโมชั่น / ส่วนลด</h1>
+              </div>
             </div>
             <DarkModeToggle />
           </div>
+          <div className="w-24 h-1 bg-[var(--coffee-brown)] rounded-full"></div>
         </div>
-      </div>
-
-      <div className="container mx-auto px-4 py-6">
         {/* Tabs */}
         <div className="mb-6">
           <div className="flex space-x-1 bg-white rounded-lg p-1 shadow-sm">

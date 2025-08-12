@@ -1,9 +1,9 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Package, AlertTriangle, Plus, Minus, ArrowLeft, Coffee, Search, Filter } from 'lucide-react';
-import Link from 'next/link';
+import { Package, AlertTriangle, Plus, Minus, Coffee, Search, Filter } from 'lucide-react';
 import DarkModeToggle from '@/components/DarkModeToggle';
+import BackButton from '@/components/BackButton';
 import { inventoryAPI } from '@/lib/api';
 
 interface Ingredient {
@@ -118,23 +118,21 @@ export default function InventoryPage() {
 
   return (
     <div className="min-h-screen coffee-theme">
-      {/* Header */}
-      <div className="bg-white shadow-sm border-b border-[var(--coffee-light)]">
-        <div className="container mx-auto px-4 py-4">
-          <div className="flex items-center justify-between">
+      <div className="container mx-auto px-4 py-8">
+        {/* Header */}
+        <div className="mb-8 fade-in">
+          <div className="flex items-center justify-between mb-6">
             <div className="flex items-center">
-              <Link href="/" className="mr-4">
-                <ArrowLeft className="w-6 h-6 text-[var(--coffee-brown)]" />
-              </Link>
-              <Package className="w-8 h-8 text-[var(--coffee-brown)] mr-3" />
-              <h1 className="text-2xl font-bold text-[var(--coffee-dark)]">จัดการสต๊อกวัตถุดิบ</h1>
+              <BackButton className="mr-4" />
+              <div className="flex items-center">
+                <Package className="w-8 h-8 text-[var(--coffee-brown)] mr-3" />
+                <h1 className="text-3xl font-bold text-[var(--coffee-dark)]">จัดการสต๊อกวัตถุดิบ</h1>
+              </div>
             </div>
             <DarkModeToggle />
           </div>
+          <div className="w-24 h-1 bg-[var(--coffee-brown)] rounded-full"></div>
         </div>
-      </div>
-
-      <div className="container mx-auto px-4 py-6">
         {/* Alert for low stock */}
         {lowStockCount > 0 && (
           <div className="bg-red-50 border border-red-200 rounded-modern p-4 mb-6">

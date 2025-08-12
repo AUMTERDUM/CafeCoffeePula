@@ -4,7 +4,7 @@ import (
 	"coffee-pula-backend/database"
 	"coffee-pula-backend/handlers"
 	"log"
-	
+
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/cors"
 	"github.com/gofiber/fiber/v2/middleware/logger"
@@ -39,6 +39,22 @@ func main() {
 
 	// API Routes
 	api := app.Group("/api")
+
+	// Health check
+	app.Get("/", func(c *fiber.Ctx) error {
+		return c.JSON(fiber.Map{
+			"message": "Coffee PuLa Backend API",
+			"status":  "running",
+			"version": "1.0.0",
+		})
+	})
+
+	app.Get("/health", func(c *fiber.Ctx) error {
+		return c.JSON(fiber.Map{
+			"status":    "healthy",
+			"timestamp": c.Context().Time(),
+		})
+	})
 
 	// Menu routes
 	api.Get("/categories", handlers.GetCategories)
@@ -95,13 +111,13 @@ func main() {
 	printers.Post("/", handlers.CreatePrinter)
 	printers.Put("/:id", handlers.UpdatePrinter)
 	printers.Delete("/:id", handlers.DeletePrinter)
-	
+
 	// Print job routes
 	api.Get("/print-jobs", handlers.GetPrintJobs)
 
 	// Loyalty Program routes
 	loyalty := api.Group("/loyalty")
-	
+
 	// Member management
 	members := loyalty.Group("/members")
 	members.Get("/", handlers.GetMembers)
@@ -110,15 +126,15 @@ func main() {
 	members.Post("/", handlers.CreateMember)
 	members.Put("/:id", handlers.UpdateMember)
 	members.Get("/:id/history", handlers.GetPointHistory)
-	
+
 	// Points management
 	loyalty.Post("/earn-points", handlers.EarnPoints)
 	loyalty.Post("/redeem-points", handlers.RedeemPoints)
-	
+
 	// Rewards
 	rewards := loyalty.Group("/rewards")
 	rewards.Get("/", handlers.GetRewards)
-	
+
 	// Statistics
 	loyalty.Get("/stats", handlers.GetMemberStats)
 
@@ -133,7 +149,7 @@ func main() {
 	// Health check
 	app.Get("/health", func(c *fiber.Ctx) error {
 		return c.JSON(fiber.Map{
-			"status": "OK",
+			"status":  "OK",
 			"message": "Coffee PuLa Backend is running!",
 		})
 	})

@@ -1,9 +1,9 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Coffee, Plus, Edit, Trash2, ArrowLeft, Search } from 'lucide-react';
-import Link from 'next/link';
+import { Coffee, Plus, Edit, Trash2, Search } from 'lucide-react';
 import DarkModeToggle from '@/components/DarkModeToggle';
+import BackButton from '@/components/BackButton';
 
 interface MenuItem {
   id: string;
@@ -179,18 +179,18 @@ export default function MenuPage() {
 
   return (
     <div className="min-h-screen coffee-theme">
-      {/* Header */}
-      <div className="bg-white shadow-sm border-b border-[var(--coffee-light)]">
-        <div className="container mx-auto px-4 py-4">
-          <div className="flex items-center justify-between">
+      <div className="container mx-auto px-4 py-8">
+        {/* Header */}
+        <div className="mb-8 fade-in">
+          <div className="flex items-center justify-between mb-6">
             <div className="flex items-center">
-              <Link href="/" className="mr-4">
-                <ArrowLeft className="w-6 h-6 text-[var(--coffee-brown)]" />
-              </Link>
-              <Coffee className="w-8 h-8 text-[var(--coffee-brown)] mr-3" />
-              <h1 className="text-2xl font-bold text-[var(--coffee-dark)]">จัดการเมนู</h1>
+              <BackButton className="mr-4" />
+              <div className="flex items-center">
+                <Coffee className="w-8 h-8 text-[var(--coffee-brown)] mr-3" />
+                <h1 className="text-3xl font-bold text-[var(--coffee-dark)]">จัดการเมนู</h1>
+              </div>
             </div>
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-4">
               <DarkModeToggle />
               <button
                 onClick={() => setShowAddForm(true)}
@@ -201,10 +201,8 @@ export default function MenuPage() {
               </button>
             </div>
           </div>
+          <div className="w-24 h-1 bg-[var(--coffee-brown)] rounded-full"></div>
         </div>
-      </div>
-
-      <div className="container mx-auto px-4 py-6">
         {/* Search and Filter */}
         <div className="card p-6 mb-6">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">

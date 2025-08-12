@@ -1,10 +1,10 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { ShoppingCart, Plus, Minus, Trash2, Coffee, ArrowLeft } from 'lucide-react';
-import Link from 'next/link';
+import { ShoppingCart, Plus, Minus, Trash2, Coffee } from 'lucide-react';
 import DarkModeToggle from '@/components/DarkModeToggle';
 import LoyaltyPanel from '@/components/LoyaltyPanel';
+import BackButton from '@/components/BackButton';
 import { menuAPI, orderAPI, receiptAPI, loyaltyAPI } from '@/lib/api';
 import { Member } from '@/lib/types';
 
@@ -211,16 +211,16 @@ export default function POSPage() {
 
   return (
     <div className="min-h-screen coffee-theme">
-      {/* Header */}
-      <div className="card-header border-b-2 border-[var(--coffee-border)]">
-        <div className="container mx-auto px-4 py-4">
-          <div className="flex items-center justify-between">
+      <div className="container mx-auto px-4 py-8">
+        {/* Header */}
+        <div className="mb-8 fade-in">
+          <div className="flex items-center justify-between mb-6">
             <div className="flex items-center">
-              <Link href="/" className="btn-secondary mr-4 p-2">
-                <ArrowLeft className="w-6 h-6" />
-              </Link>
-              <Coffee className="w-8 h-8 text-[var(--coffee-brown)] mr-3" />
-              <h1 className="text-2xl font-bold text-[var(--coffee-dark)]">ระบบขาย</h1>
+              <BackButton className="mr-4" />
+              <div className="flex items-center">
+                <Coffee className="w-8 h-8 text-[var(--coffee-brown)] mr-3" />
+                <h1 className="text-3xl font-bold text-[var(--coffee-dark)]">ระบบขาย (POS)</h1>
+              </div>
             </div>
             <div className="flex items-center gap-4">
               <DarkModeToggle />
@@ -230,10 +230,8 @@ export default function POSPage() {
               </div>
             </div>
           </div>
+          <div className="w-24 h-1 bg-[var(--coffee-brown)] rounded-full"></div>
         </div>
-      </div>
-
-      <div className="container mx-auto px-4 py-6">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Menu Section */}
           <div className="lg:col-span-2">
