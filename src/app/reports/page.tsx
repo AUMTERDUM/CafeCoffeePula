@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { BarChart3, TrendingUp, Calendar, DollarSign, ShoppingCart, ArrowLeft, Coffee } from 'lucide-react';
 import Link from 'next/link';
 import DarkModeToggle from '@/components/DarkModeToggle';
+import { orderAPI } from '@/lib/api';
 
 interface OrderItem {
   id: string;
@@ -55,8 +56,7 @@ export default function ReportsPage() {
 
   const fetchOrders = async () => {
     try {
-      const response = await fetch('/api/orders');
-      const data = await response.json();
+      const data = await orderAPI.getOrders();
       
       // ตรวจสอบว่าข้อมูลที่ได้รับเป็น array หรือไม่
       if (Array.isArray(data)) {

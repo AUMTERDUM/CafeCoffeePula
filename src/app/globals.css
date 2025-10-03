@@ -39,7 +39,7 @@ body {
 .btn {
   border: none;
   padding: 0.75rem 1.5rem;
-  border-radius: 8px;
+  border-radius: 0.75rem;
   font-weight: 600;
   font-size: 0.95rem;
   transition: all 0.3s ease;
@@ -48,6 +48,15 @@ body {
   align-items: center;
   gap: 0.5rem;
   text-decoration: none;
+}
+
+/* Ensure all buttons have rounded corners */
+button {
+  border-radius: 0.75rem;
+}
+
+button:not(.btn):not([class*="rounded"]) {
+  border-radius: 0.75rem;
 }
 
 .btn-primary {

@@ -73,15 +73,53 @@ export const apiCall = async (endpoint: string, options: RequestInit = {}) => {
   try {
     const response = await fetch(url, defaultOptions);
     
+    // Check content type before parsing
+    const contentType = response.headers.get('content-type');
+    
     if (!response.ok) {
-      const errorData = await response.json().catch(() => ({ error: 'Network error' }));
-      throw new Error(errorData.error || `HTTP error! status: ${response.status}`);
+      // Try to parse error as JSON, but handle HTML responses
+      let errorMessage = `HTTP error! status: ${response.status}`;
+      
+      if (contentType?.includes('application/json')) {
+        try {
+          const errorData = await response.json();
+          errorMessage = errorData.error || errorData.message || errorMessage;
+        } catch (e) {
+          console.error('Failed to parse error response:', e);
+        }
+      } else {
+        // If response is HTML (error page), get status text
+        const text = await response.text();
+        console.error('Non-JSON response:', text.substring(0, 200));
+        errorMessage = `Server error: ${response.statusText || response.status}`;
+      }
+      
+      throw new Error(errorMessage);
     }
     
-    return await response.json();
+    // Parse successful response
+    if (contentType?.includes('application/json')) {
+      return await response.json();
+    } else {
+      // Handle non-JSON success response
+      console.warn('Expected JSON but got:', contentType);
+      const text = await response.text();
+      
+      // Try to parse as JSON anyway (some servers don't set correct content-type)
+      try {
+        return JSON.parse(text);
+      } catch (parseError) {
+        console.error('Failed to parse response as JSON:', text.substring(0, 200), parseError);
+        throw new Error('Invalid response format from server');
+      }
+    }
   } catch (error) {
+    if (error instanceof Error) {
+      console.error('API call failed:', error.message);
+      throw error;
+    }
     console.error('API call failed:', error);
-    throw new Error('Network error');
+    throw new Error('Network error: Unable to connect to server');
   }
 };
 

@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { Settings, ArrowLeft, Store, Printer, Database, Download, Upload, Trash2, QrCode } from 'lucide-react';
 import Link from 'next/link';
 import DarkModeToggle from '@/components/DarkModeToggle';
+import { menuAPI, orderAPI } from '@/lib/api';
 
 export default function SettingsPage() {
   const [activeTab, setActiveTab] = useState('general');
@@ -51,12 +52,10 @@ export default function SettingsPage() {
   const exportData = async () => {
     try {
       // Export menu data
-      const menuResponse = await fetch('/api/menu');
-      const menuData = await menuResponse.json();
+      const menuData = await menuAPI.getMenu();
       
       // Export orders data
-      const ordersResponse = await fetch('/api/orders');
-      const ordersData = await ordersResponse.json();
+      const ordersData = await orderAPI.getOrders();
 
       const exportData = {
         menu: menuData,

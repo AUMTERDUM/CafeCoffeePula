@@ -213,7 +213,7 @@ const MemberDetailModal: React.FC<MemberDetailModalProps> = ({
                 <div className="space-y-2">
                   <button
                     onClick={() => setShowAddPoints(true)}
-                    className="w-full inline-flex items-center justify-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
+                    className="w-full inline-flex items-center justify-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-lg text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition-all"
                   >
                     <Plus className="h-4 w-4 mr-2" />
                     เพิ่มคะแนน
@@ -285,7 +285,7 @@ const MemberDetailModal: React.FC<MemberDetailModalProps> = ({
 
         {/* Add Points Modal */}
         {showAddPoints && (
-          <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center">
+          <div className="absolute inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center">
             <div className="bg-white dark:bg-gray-800 rounded-lg shadow-xl w-full max-w-md mx-4">
               <div className="p-6">
                 <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">เพิ่มคะแนน</h3>
@@ -298,7 +298,7 @@ const MemberDetailModal: React.FC<MemberDetailModalProps> = ({
                       type="number"
                       value={pointAmount}
                       onChange={(e) => setPointAmount(e.target.value)}
-                      className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500 dark:bg-gray-700 dark:text-white"
+                      className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500 dark:bg-gray-700 dark:text-white transition-all"
                       placeholder="กรอกจำนวนคะแนน"
                     />
                   </div>
@@ -310,7 +310,7 @@ const MemberDetailModal: React.FC<MemberDetailModalProps> = ({
                       type="text"
                       value={pointReason}
                       onChange={(e) => setPointReason(e.target.value)}
-                      className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500 dark:bg-gray-700 dark:text-white"
+                      className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500 dark:bg-gray-700 dark:text-white transition-all"
                       placeholder="เหตุผลในการเพิ่มคะแนน"
                     />
                   </div>
@@ -322,14 +322,14 @@ const MemberDetailModal: React.FC<MemberDetailModalProps> = ({
                       setPointAmount('');
                       setPointReason('');
                     }}
-                    className="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700"
+                    className="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition-all"
                   >
                     ยกเลิก
                   </button>
                   <button
                     onClick={handleEarnPoints}
                     disabled={!pointAmount}
-                    className="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
                   >
                     เพิ่มคะแนน
                   </button>

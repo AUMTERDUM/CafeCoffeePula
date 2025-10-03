@@ -280,8 +280,8 @@ export default function InventoryPage() {
 
       {/* Stock Adjustment Modal */}
       {showStockModal && selectedIngredient && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-modern-lg p-6 max-w-md w-full mx-4">
+        <div className="fixed inset-0 bg-black/30 backdrop-blur-sm flex items-center justify-center z-50">
+          <div className="bg-white rounded-modern-lg p-6 max-w-md w-full mx-4 shadow-2xl">
             <h3 className="text-xl font-bold text-[var(--coffee-dark)] mb-4">
               ปรับสต๊อก: {selectedIngredient.name}
             </h3>

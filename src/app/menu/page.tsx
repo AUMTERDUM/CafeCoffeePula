@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { Coffee, Plus, Edit, Trash2, Search } from 'lucide-react';
+import { menuAPI } from '@/lib/api';
 import DarkModeToggle from '@/components/DarkModeToggle';
 import BackButton from '@/components/BackButton';
 
@@ -43,8 +44,7 @@ export default function MenuPage() {
 
   const fetchMenuItems = async () => {
     try {
-      const response = await fetch('/api/menu');
-      const data = await response.json();
+      const data = await menuAPI.getMenu();
       
       if (Array.isArray(data)) {
         setMenuItems(data);
@@ -61,11 +61,11 @@ export default function MenuPage() {
 
   const fetchCategories = async () => {
     try {
-      const response = await fetch('/api/categories');
-      const data = await response.json();
-      setCategories(data);
+      const data = await menuAPI.getCategories();
+      setCategories(data || []);
     } catch (error) {
       console.error('Error fetching categories:', error);
+      setCategories([]);
     }
   };
 
@@ -230,8 +230,8 @@ export default function MenuPage() {
 
         {/* Add/Edit Form Modal */}
         {showAddForm && (
-          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-            <div className="bg-white rounded-lg p-6 w-full max-w-md mx-4">
+          <div className="fixed inset-0 bg-black/30 backdrop-blur-sm flex items-center justify-center z-50">
+            <div className="bg-white rounded-lg p-6 w-full max-w-md mx-4 shadow-2xl">
               <h2 className="text-xl font-bold text-[var(--coffee-dark)] mb-4">
                 {editingItem ? 'แก้ไขเมนู' : 'เพิ่มเมนูใหม่'}
               </h2>
