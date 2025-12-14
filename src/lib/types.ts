@@ -229,6 +229,7 @@ export interface Member extends BaseModel {
   phone?: string;
   email?: string;
   date_of_birth?: string;
+  birth_date?: string; // Alias for date_of_birth
   total_points: number;
   available_points: number;
   used_points: number;
@@ -248,6 +249,8 @@ export interface PointHistory extends BaseModel {
   order?: Order;
   type: PointHistoryType;
   points: number;
+  reason?: string; // Description of the point transaction
+  note?: string; // Additional notes
   description: string;
   expires_at?: string;
   is_expired: boolean;

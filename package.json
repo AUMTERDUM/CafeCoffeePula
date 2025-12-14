@@ -4,7 +4,9 @@
   "private": true,
   "scripts": {
     "dev": "next dev --turbopack",
+    "dev:low-memory": "cross-env NODE_OPTIONS='--max-old-space-size=512' next dev",
     "build": "next build",
+    "build:static": "next build && echo Build complete! Static files in 'out' folder",
     "start": "next start",
     "lint": "next lint"
   },
@@ -22,6 +24,7 @@
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "cross-env": "^10.1.0",
     "eslint": "^9",
     "eslint-config-next": "15.4.5",
     "tailwindcss": "^4",

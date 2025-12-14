@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { Receipt, PaymentMethod } from '@/lib/types';
 import BackButton from '@/components/BackButton';
 import DarkModeToggle from '@/components/DarkModeToggle';
+import ReceiptPreview from '@/components/ReceiptPreview';
 import { 
   Receipt as ReceiptIcon, 
   Printer as PrinterIcon,
@@ -501,97 +502,24 @@ const ReceiptPage: React.FC = () => {
           </div>
         )}
 
-        {/* Receipt Detail Modal */}
+        {/* Receipt Preview Modal */}
         {selectedReceipt && (
-          <div className="fixed inset-0 z-50 overflow-y-auto">
-            <div className="flex items-center justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
-              <div className="fixed inset-0 transition-opacity backdrop-blur-sm" aria-hidden="true">
-                <div className="absolute inset-0 bg-black/30"></div>
-              </div>
-
-              <div className="inline-block align-bottom bg-[var(--coffee-card)] rounded-lg text-left overflow-hidden shadow-2xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
-                <div className="bg-[var(--coffee-card)] px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
-                  <div className="sm:flex sm:items-start">
-                    <div className="w-full">
-                      <h3 className="text-lg leading-6 font-medium text-[var(--coffee-dark)]">
-                        รายละเอียดใบเสร็จ {selectedReceipt.receipt_number}
-                      </h3>
-                      
-                      <div className="mt-4 space-y-4">
-                        <div className="grid grid-cols-2 gap-4">
-                          <div>
-                            <div className="text-sm font-medium text-[var(--coffee-medium)]">ลูกค้า</div>
-                            <p className="text-[var(--coffee-dark)]">{selectedReceipt.customer_name || 'ลูกค้าทั่วไป'}</p>
-                          </div>
-                          <div>
-                            <div className="text-sm font-medium text-[var(--coffee-medium)]">เบอร์โทร</div>
-                            <p className="text-[var(--coffee-dark)]">{selectedReceipt.customer_phone || '-'}</p>
-                          </div>
-                        </div>
-
-                        <div>
-                          <div className="text-sm font-medium text-[var(--coffee-medium)] mb-2">รายละเอียดใบเสร็จ</div>
-                          <div className="space-y-2">
-                            <div className="flex justify-between py-2 border-b">
-                              <div>
-                                <span className="text-[var(--coffee-dark)]">รายการหลัก</span>
-                              </div>
-                              <span className="text-[var(--coffee-dark)]">฿{selectedReceipt.subtotal_amount.toLocaleString()}</span>
-                            </div>
-                            {selectedReceipt.discount_amount > 0 && (
-                              <div className="flex justify-between py-2 border-b">
-                                <div>
-                                  <span className="text-red-600">ส่วนลด</span>
-                                </div>
-                                <span className="text-red-600">-฿{selectedReceipt.discount_amount.toLocaleString()}</span>
-                              </div>
-                            )}
-                            {selectedReceipt.tax_amount > 0 && (
-                              <div className="flex justify-between py-2 border-b">
-                                <div>
-                                  <span className="text-[var(--coffee-dark)]">ภาษี</span>
-                                </div>
-                                <span className="text-[var(--coffee-dark)]">฿{selectedReceipt.tax_amount.toLocaleString()}</span>
-                              </div>
-                            )}
-                          </div>
-                        </div>
-
-                        <div className="border-t pt-4">
-                          <div className="flex justify-between items-center">
-                            <span className="text-lg font-semibold text-[var(--coffee-dark)]">รวมทั้งสิ้น</span>
-                            <span className="text-lg font-bold text-[var(--coffee-brown)]">
-                              ฿{selectedReceipt.total_amount.toLocaleString()}
-                            </span>
-                          </div>
-                        </div>
-
-                        {/* QR Code placeholder */}
-                        <div className="text-center pt-4">
-                          <div className="text-sm font-medium text-[var(--coffee-medium)]">QR Code สำหรับการชำระเงิน</div>
-                          <div className="w-32 h-32 bg-gray-200 mx-auto mt-2 flex items-center justify-center rounded">
-                            <span className="text-gray-400">QR Code</span>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-                <div className="bg-[var(--coffee-soft)] px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
-                  <button
-                    onClick={() => setSelectedReceipt(null)}
-                    className="btn btn-secondary w-full sm:ml-3 sm:w-auto"
-                  >
-                    ปิด
-                  </button>
-                  <button className="btn btn-primary w-full sm:w-auto mt-3 sm:mt-0">
-                    <PrinterIcon className="h-4 w-4 mr-2" />
-                    พิมพ์
-                  </button>
-                </div>
-              </div>
-            </div>
-          </div>
+          <ReceiptPreview
+            receipt={{
+              ...selectedReceipt,
+              items: [
+                { name: 'คาปูชิโน่', quantity: 2, price: 60 },
+                { name: 'เอสเพรสโซ่', quantity: 1, price: 45 },
+              ],
+              member: selectedReceipt.customer_name !== 'ลูกค้าทั่วไป' ? {
+                name: selectedReceipt.customer_name || '',
+                phone: selectedReceipt.customer_phone || '',
+                points: 50,
+                pointsEarned: 5
+              } : undefined
+            }}
+            onClose={() => setSelectedReceipt(null)}
+          />
         )}
       </div>
     </div>

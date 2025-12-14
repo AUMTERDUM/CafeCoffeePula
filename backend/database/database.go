@@ -24,7 +24,7 @@ func Connect() {
 
 	// อ่านค่าจาก environment variables
 	dbHost := getEnv("DB_HOST", "localhost")
-	dbPort := getEnv("DB_PORT", "3306")
+	dbPort := getEnv("DB_PORT", "3308")
 	dbUser := getEnv("DB_USER", "coffee_user")
 	dbPassword := getEnv("DB_PASSWORD", "coffee_password")
 	dbName := getEnv("DB_NAME", "coffee_pula_db")

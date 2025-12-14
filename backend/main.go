@@ -4,8 +4,11 @@ import (
 	"coffee-pula-backend/database"
 	"coffee-pula-backend/handlers"
 	"log"
+	"time"
 
 	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/fiber/v2/middleware/cache"
+	"github.com/gofiber/fiber/v2/middleware/compress"
 	"github.com/gofiber/fiber/v2/middleware/cors"
 	"github.com/gofiber/fiber/v2/middleware/logger"
 )
@@ -31,10 +34,33 @@ func main() {
 
 	// Middleware
 	app.Use(logger.New())
+
+	// CORS - Allow network access from any IP in local network
 	app.Use(cors.New(cors.Config{
-		AllowOrigins: "http://localhost:3000,http://localhost:3001", // Next.js frontend
-		AllowHeaders: "Origin, Content-Type, Accept, Authorization",
-		AllowMethods: "GET, POST, PUT, DELETE, OPTIONS",
+		AllowOrigins:     "*", // Allow all origins for local network access
+		AllowHeaders:     "Origin, Content-Type, Accept, Authorization",
+		AllowMethods:     "GET, POST, PUT, DELETE, OPTIONS",
+		AllowCredentials: false,
+	}))
+
+	// Compression - Reduce response size
+	app.Use(compress.New(compress.Config{
+		Level: compress.LevelBestSpeed, // Fast compression
+	}))
+
+	// Cache middleware for GET requests (menu, categories)
+	app.Use(cache.New(cache.Config{
+		Next: func(c *fiber.Ctx) bool {
+			// Only cache GET requests for specific endpoints
+			if c.Method() != "GET" {
+				return true
+			}
+			path := c.Path()
+			// Cache menu and categories (they don't change often)
+			return path != "/api/menu" && path != "/api/categories"
+		},
+		Expiration:   5 * time.Minute, // Cache for 5 minutes
+		CacheControl: true,
 	}))
 
 	// API Routes
@@ -154,7 +180,17 @@ func main() {
 		})
 	})
 
-	// Start server
-	log.Println("🚀 Server starting on http://localhost:8081")
-	log.Fatal(app.Listen(":8081"))
+	// Serve static files from Next.js build (if exists)
+	// Place Next.js 'out' folder contents in 'static' folder
+	app.Static("/", "./static", fiber.Static{
+		Compress:      true,
+		Browse:        false,
+		Index:         "index.html",
+		CacheDuration: 24 * time.Hour,
+	})
+
+	// Start server - Listen on all network interfaces (0.0.0.0)
+	log.Println("🚀 Server starting on http://0.0.0.0:8081")
+	log.Println("📡 Access from other devices: http://YOUR_PC_IP:8081")
+	log.Fatal(app.Listen("0.0.0.0:8081"))
 }

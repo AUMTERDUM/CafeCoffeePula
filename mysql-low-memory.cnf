@@ -1,0 +1,59 @@
+# MySQL Configuration for Low Memory (4GB RAM)
+# Optimized for Coffee POS System
+# Target: Reduce MySQL RAM usage from ~400MB to ~150MB
+
+[mysqld]
+# === Connection Settings ===
+max_connections = 50              # ลดจาก 151 → 50 (ร้านกาแฟไม่ต้องการ connections เยอะ)
+thread_cache_size = 4             # Cache threads
+max_allowed_packet = 16M          # ขนาด packet ที่รับได้
+
+# === InnoDB Buffer Pool (สำคัญที่สุด!) ===
+innodb_buffer_pool_size = 128M    # ลดจาก 128M+ → 128M (ใช้ RAM น้อยลง)
+innodb_buffer_pool_instances = 1  # ใช้ instance เดียว (ประหยัด RAM)
+innodb_log_file_size = 32M        # ลดขนาด log file
+innodb_log_buffer_size = 8M       # ลด log buffer
+
+# === Query Cache (เพิ่มความเร็ว) ===
+query_cache_type = 1              # เปิด query cache
+query_cache_size = 16M            # Cache queries ที่ใช้บ่อย
+query_cache_limit = 2M            # Max ขนาด query ที่จะ cache
+
+# === Table Cache ===
+table_open_cache = 128            # ลดจาก 2000 → 128
+table_definition_cache = 128      # ลด table definitions cache
+
+# === Temporary Tables ===
+tmp_table_size = 16M              # ลด temp table size
+max_heap_table_size = 16M         # ลด heap table size
+
+# === MyISAM Settings (ถ้าใช้) ===
+key_buffer_size = 8M              # ลดจาก 16M → 8M
+
+# === Binary Log (ปิดถ้าไม่ใช้ replication) ===
+# skip-log-bin                    # Uncomment เพื่อปิด binary logging (ประหยัด disk I/O)
+
+# === Performance Schema (ปิดเพื่อประหยัด RAM) ===
+performance_schema = OFF          # ปิด performance monitoring (ประหยัด ~50MB)
+
+# === Slow Query Log (เปิดเพื่อ debug) ===
+slow_query_log = 1
+slow_query_log_file = /var/log/mysql/mysql-slow.log
+long_query_time = 2
+
+# === Character Set ===
+character-set-server = utf8mb4
+collation-server = utf8mb4_unicode_ci
+
+# === Other Optimizations ===
+thread_stack = 192K               # ลด thread stack
+sort_buffer_size = 2M             # ลด sort buffer
+read_buffer_size = 2M             # ลด read buffer
+read_rnd_buffer_size = 1M         # ลด random read buffer
+join_buffer_size = 2M             # ลด join buffer
+
+# === Network ===
+skip-name-resolve                 # ไม่ resolve hostname (เร็วขึ้น)
+
+[client]
+default-character-set = utf8mb4

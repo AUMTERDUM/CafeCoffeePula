@@ -246,7 +246,7 @@ const MemberDetailModal: React.FC<MemberDetailModalProps> = ({
                     <div className="flex-1">
                       <div className="flex items-center space-x-2">
                         <span className="text-sm font-medium text-gray-900 dark:text-white">
-                          {history.reason}
+                          {history.reason || history.note || (history.type === 'EARN' ? 'รับแต้มจากการซื้อ' : 'ใช้แต้ม')}
                         </span>
                         <span
                           className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-medium ${
